@@ -1,17 +1,15 @@
 #include <iostream>
-#include <typeinfo>
 
 using namespace std;
-constexpr auto maxItems = 10;
 
 template <typename Type>
 class Stack
 {
 public:
-    Stack();
+    Stack(size_t size);
     ~Stack() {}
 
-    void push(Type item); // insert item into stack
+    void push(Type& item); // insert item into stack
     Type pop(); // return and remove top item of the stack
     Type peek(); // return top item of the stack without removing it
     bool isFull(); // check if item count has reached max
@@ -21,25 +19,27 @@ public:
 
 private:
     int movecount = 0; // for debugging
-    Type* stack;
-    Type* top;
+    Type* _stack;
+    Type* _top;
+    size_t _size;
 };
 
 template <typename Type>
-Stack<typename Type>::Stack()
+Stack<typename Type>::Stack(size_t size)
 {
-    stack = new Type[sizeof(Type) * maxItems]; // allocating memory
-    top = stack;
+    _stack = new Type[sizeof(Type) * size]; // allocating memory
+    _top = _stack;
+    _size = size;
 }
 
 template <typename Type>
-void Stack<typename Type>::push(Type item)
+void Stack<typename Type>::push(Type& item)
 {
     if (!isFull())
     {
         movecount++;
-        *top = item;
-        top += sizeof(Type);
+        *_top = item;
+        _top += sizeof(Type);
     }
     else
     {
@@ -53,9 +53,9 @@ Type Stack<typename Type>::pop()
     if (!isEmpty())
     {
         movecount--;
-        auto item = *(top - sizeof(Type));
-        top -= sizeof(Type);
-        memset(top + sizeof(Type), NULL, sizeof(Type));
+        auto item = *(_top - sizeof(Type));
+        _top -= sizeof(Type);
+        memset(_top + sizeof(Type), NULL, sizeof(Type));
         return item;
     }
     throw std::underflow_error("Popping not possible: Stack is empty!");
@@ -66,7 +66,7 @@ Type Stack<typename Type>::peek()
 {
     if (!isEmpty())
     {
-        auto item = *(top - sizeof(Type));
+        auto item = *(_top - sizeof(Type));
         return item;
     }
     throw std::underflow_error("Peeking not possible: Stack is empty!");
@@ -75,32 +75,33 @@ Type Stack<typename Type>::peek()
 template <typename Type>
 bool Stack<typename Type>::isFull()
 {
-    return top == stack + sizeof(Type) * maxItems;
+    return _top == _stack + sizeof(Type) * _size;
 }
 
 template <typename Type>
 bool Stack<typename Type>::isEmpty()
 {
-    return top == stack;
+    return _top == _stack;
 }
 
 template <typename Type>
 void Stack<typename Type>::print()
 {
     for (size_t i = 1; i <= movecount; i++)
-        cout << *(top - i* sizeof(Type)) << endl;
+        cout << *(_top - i * sizeof(Type)) << endl;
 }
 
 template <typename Type>
 void Stack<typename Type>::clear()
 {
-    memset(stack, NULL, sizeof(Type) * maxItems);
-    top = stack;
+    memset(_stack, NULL, sizeof(Type) * _size);
+    _top = _stack;
 }
+
 
 int main()
 {
-    Stack<char> myStack;
+    Stack<char> myStack(10);
     bool isFull = myStack.isFull();
     bool isEmpty = myStack.isEmpty();
     // auto var = myStack.peek(); // underflow error
@@ -125,7 +126,7 @@ int main()
     myStack.print();
     isFull = myStack.isFull();
 
-    Stack<float> myStack2;
+    Stack<float> myStack2(3);
     isFull = myStack2.isFull();
     isEmpty = myStack2.isEmpty();
     float aFloat = 1.234;
@@ -133,7 +134,7 @@ int main()
     isEmpty = myStack2.isEmpty();
     myStack2.print();
 
-    Stack<int> myStack3;
+    Stack<int> myStack3(3);
     isFull = myStack3.isFull();
     isEmpty = myStack3.isEmpty();
     int anInt = 1000;
