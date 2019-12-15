@@ -42,6 +42,7 @@ int main()
     int anInt = 1000;
     myStack3.push(&anInt);
     myStack3.push(&anInt);
+    auto anInt2 = myStack3[1];
     myStack3.push(&anInt);
     isEmpty = myStack3.isEmpty();
     myStack3.print();

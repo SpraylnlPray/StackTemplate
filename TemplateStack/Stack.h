@@ -107,6 +107,6 @@ template<typename Type, size_t size>
 inline Type* Stack<Type, size>::operator[](int index)
 {
     if (index <= elementCount)
-        return &(_stack + sizeof(Type) * index);
+        return (_stack + sizeof(Type) * index);
     return nullptr;
 }
