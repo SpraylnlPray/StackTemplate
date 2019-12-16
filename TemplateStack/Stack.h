@@ -7,8 +7,7 @@ class Stack
 public:
     Stack()
     {
-        _stack = new Type[sizeof(Type) * size]; // allocating memory
-        _top = _stack;
+        _stack = new Type*[size]; // allocating memory
     }
     ~Stack() {}
 
@@ -17,15 +16,14 @@ public:
     {
         if (isEmpty())
         {
+            _stack[elementCount] = item;
             elementCount++;
-            *_top = *item;
             return true;
         }
         else if (!isEmpty() && !isFull())
         {
+            _stack[elementCount] = item;
             elementCount++;
-            _top += sizeof(Type);
-            *_top = *item;
             return true;
         }
         else
@@ -38,11 +36,7 @@ public:
     {
         if (!isEmpty())
         {
-            elementCount--;
-            auto item = _top;
-            memset(_top, NULL, sizeof(Type));
-            _top -= sizeof(Type);
-            return item;
+            return _stack[elementCount--];
         }
         return nullptr;
     }
@@ -51,7 +45,7 @@ public:
     {
         if (!isEmpty())
         {
-            return _top;
+            return _stack[elementCount];
         }
         return nullptr;
     }
@@ -63,19 +57,18 @@ public:
     void print()
     {
         for (int i = 0; i < elementCount; i++)
-            std::cout << *(_top - i * sizeof(Type)) << std::endl;
+            std::cout << *_stack[i] << std::endl;
     }
     // delete all elements
     void clear()
     {
-        memset(_stack, NULL, sizeof(Type) * size);
-        _top = _stack;
+        _stack = new Type * [size]; // allocating memory
     }
     // access element via index
     Type* operator[](int index)
     {
         if (index <= elementCount)
-            return (_stack + sizeof(Type) * index);
+            return _stack[index];
         return nullptr;
     }
     // get number of elements
@@ -83,6 +76,5 @@ public:
 
 private:
     int elementCount = 0;
-    Type* _stack;
-    Type* _top;
+    Type** _stack;
 };
