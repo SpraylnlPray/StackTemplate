@@ -14,13 +14,7 @@ public:
     // insert item into stack
     bool push(Type* item) 
     {
-        if (isEmpty())
-        {
-            _stack[elementCount] = item;
-            elementCount++;
-            return true;
-        }
-        else if (!isEmpty() && !isFull())
+        if (!isFull())
         {
             _stack[elementCount] = item;
             elementCount++;
